@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from "react"
 import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
-
+import Link from 'next/link';
 // firebase
 import { db } from "../libs/firebase";
 
@@ -13,7 +13,7 @@ export default function Home() {
   const [posts, setPosts] = useState<IPosts[]>([]);
   function getPost() {
     try {
-      const collectionPosts = collection(db, "post");
+      const collectionPosts = collection(db, "posts");
       const q = query(collectionPosts, orderBy('timestamp', 'desc'));
       const unsubscribe = onSnapshot(q, snapshot => {
         const newPosts = snapshot.docs.map(doc => ({...doc.data(), id: doc.id}))
@@ -46,7 +46,10 @@ export default function Home() {
             </div>
             <div className="py-4 flex align-center justify-between">
               <p>{post.description}</p>
-              <button type="button" className="font-medium bg-cyan-500 text-white py-2 rounded-md text-sm">View Detail</button>
+              <Link href={{pathname: `/posts/${post.id}`, query: { ...post } as any}}>
+                <button type="button" className="font-medium bg-cyan-500 text-white py-2 rounded-md text-sm">View Detail</button>
+              </Link>
+
             </div>
             <div>{post?.comments?.length > 0 ? post.comments.length : 0} comments</div>
           </div>
